@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Instant QR</title>
+
+<style>
+/* =========================================================
+   BASE
+========================================================= */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, #0b1d3a 0%, #020617 100%);
+    color: #e5e7eb;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+header {
+    background: rgba(2, 6, 23, 0.85);
+    backdrop-filter: blur(8px);
+    padding: 18px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1e293b;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #818cf8;
+}
+
+header span {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+main {
+    position: relative;
+    padding: 64px 48px;
+    max-width: 1200px;
+    margin: auto;
+    min-height: calc(100vh - 140px);
+}
+
+/* Glow behind form */
+main::before {
+    content: "";
+    position: absolute;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%);
+    z-index: -1;
+}
+
+/* =========================================================
+   HEADING
+========================================================= */
+h2 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 36px;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+form {
+    text-align: center;
+}
+
+input {
+    width: 420px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid #1e293b;
+    background: #020617;
+    color: #e5e7eb;
+    font-size: 15px;
+}
+
+input::placeholder {
+    color: #64748b;
+}
+
+button {
+    margin-left: 10px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* =========================================================
+   QR CONTAINER
+========================================================= */
+.qr-container {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 50px;
+    flex-wrap: wrap;
+}
+
+/* Divider line */
+.qr-container::before {
+    content: "";
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #6366f1, transparent);
+}
+
+/* =========================================================
+   QR CARD
+========================================================= */
+.qr-box {
+    width: 210px;
+    padding: 18px;
+    text-align: center;
+    border-radius: 16px;
+    background: rgba(2, 6, 23, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148,163,184,0.15);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.qr-box:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+}
+
+/* =========================================================
+   LINK
+========================================================= */
+.qr-box a {
+    text-decoration: none;
+    color: #6366f1;
+    font-weight: 600;
+    font-size: 15px;
+    word-break: break-word;
+}
+
+.qr-box a:hover {
+    text-decoration: underline;
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+.logo-box {
+    margin: 14px auto;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-box img {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+}
+
+/* =========================================================
+   QR IMAGE
+========================================================= */
+.qr-box img:last-child {
+    margin-top: 12px;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+footer {
+    background: #020617;
+    border-top: 1px solid #1e293b;
+    text-align: center;
+    padding: 14px;
+    font-size: 14px;
+    color: #94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Instant QR</h1>
+    <span>Instant Website QR Generator</span>
+</header>
+
+<main>
+
+    <h2>Paste Website Names or URLs</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="text" placeholder="Enter website name or URL" required>
+        <button type="submit">Generate QR Code</button>
+    </form>
+
+    {% if qr_codes %}
+    <div class="qr-container">
+        {% for qr in qr_codes %}
+        <div class="qr-box">
+
+            <a href="{{ qr.url }}" target="_blank">
+                {{ qr.url|cut:"https://"|cut:"www." }}
+            </a>
+
+            <div class="logo-box">
+                <img src="https://www.google.com/s2/favicons?domain={{ qr.url }}&sz=256" alt="logo">
+            </div>
+
+            <img src="data:image/png;base64,{{ qr.img }}" width="150">
+
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</main>
+
+<footer>
+    © 2025 Instant QR • Built with Django
+</footer>
+
+</body>
+</html>
