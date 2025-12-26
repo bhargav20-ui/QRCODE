@@ -159,16 +159,35 @@ button:active {
 }
 
 .logo-box {
-    margin: 14px auto;
-    width: 25px;
-    height: 25px;
+    margin: 8px auto 6px;
+    width: 56px;
+    height: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ffffff;
+    border-radius: 14px;
 }
 
 .logo-box img {
-    width: 25px;
-    height: 25px;
-    object-fit: contain;
+    width: 36px;           /* ✅ same size for all logos */
+    height: 36px;
+    object-fit: contain;   /* ✅ no stretching */
+    image-rendering: auto;
 }
+
+
+
+.qr-box img:last-child {
+    margin-top: 6px;       /* 🔽 small clean gap */
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+
 
 .qr-box img:last-child {
     margin-top: 12px;
