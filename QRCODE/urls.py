@@ -14,8 +14,19 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+from django.http import HttpResponse
+from django.views.generic import TemplateView
+
 from django.urls import path, include
 
 urlpatterns = [
+    path(
+        'googlee63c5a0f0809c028.html',
+        TemplateView.as_view(
+            template_name='googlee63c5a0f0809c028.html',
+            content_type='text/html'
+        ),
+    ),
     path("", include("qrapp.urls")),
 ]
