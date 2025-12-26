@@ -20,6 +20,8 @@ from django.views.generic import TemplateView
 
 from django.urls import path, include
 
+from qrapp.views import home
+
 urlpatterns = [
     path(
         'googlee63c5a0f0809c028.html',
@@ -29,4 +31,5 @@ urlpatterns = [
         ),
     ),
     path("", include("qrapp.urls")),
+    path('', home, name='home'),
 ]
