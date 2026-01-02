@@ -25,55 +25,88 @@
 # }
 
 
-from django.shortcuts import render, redirect
-import qrcode
-import io
-import base64
 import re
+import qrcode
+import base64
+from io import BytesIO
+
 from django.core.files.storage import FileSystemStorage
-from django.conf import settings
+from django.shortcuts import render, redirect
 
 
+# ---------------- ICON DETECTOR ----------------
+def get_icon(name):
+    name = name.lower()
+
+    if name.endswith(".pdf"):
+        return "📄"
+    elif name.endswith(".doc") or name.endswith(".docx"):
+        return "📝"
+    elif name.endswith(".ppt") or name.endswith(".pptx"):
+        return "📊"
+    elif name.endswith(".jpg") or name.endswith(".jpeg") or name.endswith(".png"):
+        return "🖼️"
+    elif name.endswith(".zip") or name.endswith(".rar"):
+        return "🗜️"
+    else:
+        return "🔗"
 
 
+# ---------------- HOME VIEW ----------------
 def home(request):
     qr_codes = []
+    seen = set()
 
     if request.method == "POST":
 
-        # ---------- FILE UPLOAD ----------
-        uploaded_file = request.FILES.get('file')
+        # ---------- HANDLE WEBSITE LINKS ----------
+        text = request.POST.get("text", "").strip()
 
-        if uploaded_file:
-            fs = FileSystemStorage()
-            filename = fs.save(uploaded_file.name, uploaded_file)
-            file_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
+        urls = re.findall(r'https?://[^\s]+', text)
+        domains = re.findall(r'\b[a-z0-9-]+(?:\.[a-z]{2,})+\b', text)
+
+        for item in urls + domains:
+            if not item.startswith("http"):
+                final_url = "https://" + item
+            else:
+                final_url = item
+
+            if final_url in seen:
+                continue
+            seen.add(final_url)
+
+            qr = qrcode.make(final_url)
+            buffer = BytesIO()
+            qr.save(buffer, format="PNG")
+
+            qr_codes.append({
+                "name": final_url.replace("https://", "").replace("www.", ""),
+                "url": final_url,
+                "img": base64.b64encode(buffer.getvalue()).decode(),
+                "icon": "🔗"
+            })
+
+        # ---------- HANDLE FILE UPLOADS ----------
+        files = request.FILES.getlist("files")
+        fs = FileSystemStorage()
+
+        for file in files:
+            filename = fs.save(file.name, file)
+            file_url = request.build_absolute_uri(fs.url(filename))
 
             qr = qrcode.make(file_url)
-            buffer = io.BytesIO()
+            buffer = BytesIO()
             qr.save(buffer, format="PNG")
 
-            img_str = base64.b64encode(buffer.getvalue()).decode()
-
             qr_codes.append({
+                "name": file.name,
                 "url": file_url,
-                "img": img_str
+                "img": base64.b64encode(buffer.getvalue()).decode(),
+                "icon": get_icon(file.name)
             })
 
-        # ---------- URL TEXT ----------
-        text = request.POST.get("text", "").lower()
-        if text:
-            url = text if text.startswith("http") else "https://" + text
+        request.session["qr_codes"] = qr_codes
+        return redirect("home")
 
-            qr = qrcode.make(url)
-            buffer = io.BytesIO()
-            qr.save(buffer, format="PNG")
-
-            img_str = base64.b64encode(buffer.getvalue()).decode()
-
-            qr_codes.append({
-                "url": url,
-                "img": img_str
-            })
-
+    qr_codes = request.session.pop("qr_codes", None)
     return render(request, "qr.html", {"qr_codes": qr_codes})

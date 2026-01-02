@@ -22,20 +22,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from qrapp.views import home
 
-
-
 urlpatterns = [
-    path(
-        'googlee63c5a0f0809c028.html',
-        TemplateView.as_view(
-            template_name='googlee63c5a0f0809c028.html',
-            content_type='text/html'
-        ),
-    ),
-    path("", include("qrapp.urls")),
     path('', home, name='home'),
 ]
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

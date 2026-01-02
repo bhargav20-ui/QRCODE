@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Instant QR is a free online tool to generate QR codes for any website instantly. Paste any URL and get QR codes in seconds.">
-    <meta name="keywords" content="QR code generator, instant qr, website qr, free qr generator">
-    <meta name="author" content="Instant QR">
-    <title>Instant QR – Free Website QR Generator</title>
+<meta charset="UTF-8">
+<meta name="description" content="Instant QR is a smart web app to generate QR codes for websites and files instantly.">
+<meta name="keywords" content="QR code generator, instant qr, website qr, file qr">
+<meta name="author" content="Instant QR">
+<title>Instant QR – Smart QR Generator</title>
 
 <style>
-/* ================= BASE ================= */
 body {
     margin: 0;
     font-family: 'Segoe UI', system-ui, sans-serif;
@@ -16,7 +15,7 @@ body {
     color: #e5e7eb;
 }
 
-/* ================= HEADER ================= */
+/* HEADER */
 header {
     background: rgba(2, 6, 23, 0.85);
     backdrop-filter: blur(8px);
@@ -30,7 +29,6 @@ header {
 header h1 {
     margin: 0;
     font-size: 22px;
-    font-weight: 700;
     color: #818cf8;
 }
 
@@ -39,76 +37,25 @@ header span {
     color: #94a3b8;
 }
 
-/* ================= MAIN ================= */
+/* MAIN */
 main {
-    position: relative;
     padding: 64px 48px;
     max-width: 1200px;
     margin: auto;
-    min-height: calc(100vh - 140px);
 }
 
-/* Glow */
-main::before {
-    content: "";
-    position: absolute;
-    top: 120px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 700px;
-    height: 280px;
-    background: radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%);
-    z-index: -1;
-}
-
-/* ================= HEADING ================= */
 h2 {
     text-align: center;
-    font-size: 24px;
-    font-weight: 600;
     margin-bottom: 36px;
 }
 
-/* ================= FORM ================= */
+/* FORM */
 form {
     text-align: center;
 }
 
-input {
-    width: 420px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    border: 1px solid #1e293b;
-    background: #020617;
-    color: #e5e7eb;
-    font-size: 15px;
-}
-
-input::placeholder {
-    color: #64748b;
-}
-
-button {
-    margin-left: 10px;
-    padding: 14px 28px;
-    border-radius: 12px;
-    border: none;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-button:hover {
-    opacity: 0.9;
-}
-
-button:active {
-    transform: scale(0.97);
-}
 .smart-input {
-    width: 460px;
+    width: 520px;
     margin: 0 auto 20px;
     padding: 14px;
     background: #020617;
@@ -135,103 +82,76 @@ button:active {
     border-radius: 10px;
     cursor: pointer;
     font-size: 14px;
-    white-space: nowrap;
 }
 
 .file-label:hover {
     background: #2a3b5f;
 }
 
+button {
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
 
-/* ================= QR CONTAINER ================= */
+/* QR DISPLAY */
 .qr-container {
-    position: relative;
     display: flex;
     gap: 24px;
     justify-content: center;
     margin-top: 50px;
     flex-wrap: wrap;
 }
-
-.qr-container::before {
-    content: "";
-    position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 2px;
-    background: linear-gradient(to right, transparent, #6366f1, transparent);
-}
-
-/* ================= QR CARD ================= */
 .qr-box {
     width: 210px;
+    height: 340px;                 /* ✅ fixed height */
     padding: 18px;
     text-align: center;
     border-radius: 16px;
     background: rgba(2, 6, 23, 0.85);
-    backdrop-filter: blur(10px);
     border: 1px solid rgba(148,163,184,0.15);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+    display: flex;                 /* ✅ flex layout */
+    flex-direction: column;
+    align-items: center;
 }
 
-.qr-box:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-}
 
 .qr-box a {
-    text-decoration: none;
     color: #6366f1;
     font-weight: 600;
-    font-size: 15px;
-    word-break: break-word;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 6px;
 }
 
-.qr-box a:hover {
-    text-decoration: underline;
-}
-
-.logo-box {
-    margin: 8px auto 6px;
+/* FILE ICON */
+.file-icon {
     width: 56px;
     height: 56px;
-
+    margin: 6px auto 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-
     background: #ffffff;
     border-radius: 14px;
+    font-size: 28px;
 }
 
-.logo-box img {
-    width: 36px;           /* ✅ same size for all logos */
-    height: 36px;
-    object-fit: contain;   /* ✅ no stretching */
-    image-rendering: auto;
-}
-
-
-
-.qr-box img:last-child {
-    margin-top: 6px;       /* 🔽 small clean gap */
+/* QR IMAGE */
+.qr-box img {
+    margin-top: 6px;
     background: #ffffff;
     padding: 12px;
     border-radius: 12px;
 }
 
-
-
-.qr-box img:last-child {
-    margin-top: 12px;
-    background: #ffffff;
-    padding: 12px;
-    border-radius: 12px;
-}
-
-/* ================= ABOUT SECTION ================= */
+/* ABOUT SECTION */
 .about-section {
     max-width: 900px;
     margin: 90px auto 40px;
@@ -257,18 +177,7 @@ button:active {
     padding-left: 20px;
 }
 
-.github-btn {
-    display: inline-block;
-    margin-top: 16px;
-    padding: 10px 18px;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: white;
-    text-decoration: none;
-    border-radius: 10px;
-    font-weight: 600;
-}
-
-/* ================= FOOTER ================= */
+/* FOOTER */
 footer {
     background: #020617;
     border-top: 1px solid #1e293b;
@@ -284,133 +193,104 @@ footer {
 
 <header>
     <h1>Instant QR</h1>
-    <span>Smart Website QR Generator</span>
+    <span>Smart Website & File QR Generator</span>
 </header>
 
 <main>
 
-<h2>Paste Website Names or URLs</h2>
+<h2>Paste Website URLs or Upload Files</h2>
 
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-
     <div class="smart-input">
-        <input 
-            type="text" 
-            name="text" 
-            placeholder="Paste website URL or leave empty to upload a file"
-        >
-
-        <label class="file-label">
-            <input type="file" name="file" hidden>
-            📎 Upload File
+        <input type="text" name="text" placeholder="Enter website URLs (space separated)">
+        <label class="file-label" for="fileInput">
+            📎 <span id="fileText">Upload Files</span>
         </label>
+        <input type="file" name="files" id="fileInput" multiple hidden>
     </div>
-
-    <button type="submit">Generate QR Code</button>
+    <button type="submit">Generate QR Codes</button>
 </form>
-
 
 {% if qr_codes %}
 <div class="qr-container">
-    {% for qr in qr_codes %}
-    <div class="qr-box">
+{% for qr in qr_codes %}
+<div class="qr-box">
 
-        <a href="{{ qr.url }}" target="_blank">
-            {{ qr.url|cut:"https://"|cut:"www." }}
-        </a>
+<a href="{{ qr.url }}" target="_blank">{{ qr.name }}</a>
 
-        <div class="logo-box">
-            <img src="https://www.google.com/s2/favicons?domain={{ qr.url }}&sz=256" alt="logo">
-        </div>
+<div class="file-icon">{{ qr.icon }}</div>
 
-        <img src="data:image/png;base64,{{ qr.img }}" width="150">
-    </div>
-    {% endfor %}
+<img src="data:image/png;base64,{{ qr.img }}" width="150">
+
+</div>
+{% endfor %}
 </div>
 {% endif %}
 
-<!-- ================= ABOUT CONTENT ================= -->
+</main>
+
+<!-- ===== OLD CONTENT RESTORED ===== -->
 <section class="about-section">
 
 <h3>More about Instant QR</h3>
-
 <p>
 <strong>Instant QR</strong> is a fast, lightweight, and intuitive web application
-that allows users to generate QR codes for websites in seconds.
-Designed with simplicity and performance in mind, Instant QR eliminates
-unnecessary steps and delivers QR codes instantly — no login required.
-</p>
-
-<p>
-Whether you're a student, developer, business owner, or marketer,
-Instant QR helps you convert website links into scannable QR codes effortlessly.
+that allows users to generate QR codes for websites and files in seconds.
+Designed with simplicity and performance in mind — no login required.
 </p>
 
 <h3>Key Features</h3>
-
 <ul>
 <li><strong>Instant Generation:</strong> Generate QR codes immediately.</li>
 <li><strong>Smart URL Detection:</strong> Supports .com, .edu, .in, .org, etc.</li>
+<li><strong>File Support:</strong> PDFs, Docs, Images, PPTs & more.</li>
 <li><strong>Multiple QR Support:</strong> Generate multiple QRs at once.</li>
 <li><strong>Clean UI:</strong> Professional startup-style interface.</li>
-<li><strong>No Login Required:</strong> Free and open for everyone.</li>
 </ul>
 
 <h3>About the Creator</h3>
-
 <p>
 My name is <strong>Vinay Venkata Bhargav</strong>.
 I am a Computer Science student with a strong interest in web development
 and backend technologies.
 </p>
 
-<p>
-I built Instant QR using Django to gain hands-on experience in full-stack
-development, cloud deployment, and real-world product design.
-</p>
-
 <h3>Why Instant QR?</h3>
-
 <p>
-Instant QR is designed with a clear focus on speed, simplicity, and accessibility.
-Unlike complex QR tools that require multiple steps or user accounts, Instant QR
-allows anyone to generate QR codes instantly without sign-ups, ads, or distractions.
-</p>
-
-<p>
-This project demonstrates practical problem-solving, clean UI design,
-and real-world deployment using Django — highlighting essential skills
-required in modern full-stack web development.
+This project demonstrates real-world Django development, clean UI design,
+file handling, QR generation, and cloud deployment.
 </p>
 
 <h3>Use Cases</h3>
-
 <ul>
-    <li>Quickly share website links using QR codes</li>
-    <li>Generate QR codes for portfolios and resumes</li>
-    <li>Create scannable links for events and presentations</li>
-    <li>Use in educational materials and project demos</li>
-    <li>Digital marketing and quick-access resources</li>
+<li>Share website links instantly</li>
+<li>Generate QR codes for resumes & portfolios</li>
+<li>Upload files and share via QR</li>
+<li>Educational & project demos</li>
 </ul>
 
 <h3>Future Enhancements</h3>
-
 <p>
-Planned improvements for Instant QR include downloadable QR images,
-customizable QR styles, enhanced mobile responsiveness, and optional
-analytics to track QR usage — making the platform even more powerful
-and user-friendly.
+Custom QR styles, downloadable images, analytics, and mobile optimization.
 </p>
 
-
 </section>
-
-</main>
 
 <footer>
 © 2025 Instant QR • Built with Django
 </footer>
+
+<script>
+const fileInput = document.getElementById("fileInput");
+const fileText = document.getElementById("fileText");
+
+fileInput.addEventListener("change", () => {
+    fileText.textContent = fileInput.files.length
+        ? `${fileInput.files.length} file(s) selected`
+        : "Upload Files";
+});
+</script>
 
 </body>
 </html>
