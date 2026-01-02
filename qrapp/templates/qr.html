@@ -107,6 +107,41 @@ button:hover {
 button:active {
     transform: scale(0.97);
 }
+.smart-input {
+    width: 460px;
+    margin: 0 auto 20px;
+    padding: 14px;
+    background: #020617;
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.smart-input input[type="text"] {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e5e7eb;
+    font-size: 15px;
+}
+
+.file-label {
+    background: #1e293b;
+    color: #c7d2fe;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.file-label:hover {
+    background: #2a3b5f;
+}
+
 
 /* ================= QR CONTAINER ================= */
 .qr-container {
@@ -259,11 +294,18 @@ footer {
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 
-    <input type="text" name="text" placeholder="Enter website name or URL">
-    <br><br>
+    <div class="smart-input">
+        <input 
+            type="text" 
+            name="text" 
+            placeholder="Paste website URL or leave empty to upload a file"
+        >
 
-    <input type="file" name="file">
-    <br><br>
+        <label class="file-label">
+            <input type="file" name="file" hidden>
+            📎 Upload File
+        </label>
+    </div>
 
     <button type="submit">Generate QR Code</button>
 </form>
