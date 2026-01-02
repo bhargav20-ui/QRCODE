@@ -256,11 +256,18 @@ footer {
 
 <h2>Paste Website Names or URLs</h2>
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <input type="text" name="text" placeholder="Enter website name or URL.." required>
+
+    <input type="text" name="text" placeholder="Enter website name or URL">
+    <br><br>
+
+    <input type="file" name="file">
+    <br><br>
+
     <button type="submit">Generate QR Code</button>
 </form>
+
 
 {% if qr_codes %}
 <div class="qr-container">

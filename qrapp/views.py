@@ -30,44 +30,40 @@ import qrcode
 import io
 import base64
 import re
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
+
+
 
 
 def home(request):
+    qr_codes = []
+
     if request.method == "POST":
+
+        # ---------- FILE UPLOAD ----------
+        uploaded_file = request.FILES.get('file')
+
+        if uploaded_file:
+            fs = FileSystemStorage()
+            filename = fs.save(uploaded_file.name, uploaded_file)
+            file_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
+
+            qr = qrcode.make(file_url)
+            buffer = io.BytesIO()
+            qr.save(buffer, format="PNG")
+
+            img_str = base64.b64encode(buffer.getvalue()).decode()
+
+            qr_codes.append({
+                "url": file_url,
+                "img": img_str
+            })
+
+        # ---------- URL TEXT ----------
         text = request.POST.get("text", "").lower()
-
-        qr_codes = []
-        seen = set()
-
-        # 1️⃣ Extract full URLs
-        urls = re.findall(r'https?://[^\s]+', text)
-        text = re.sub(r'https?://[^\s]+', ' ', text)
-
-        # 2️⃣ Extract domains with extensions (.com, .edu, .in, etc.)
-        domains = re.findall(
-            r'\b[a-z0-9-]+(?:\.[a-z0-9-]+)+\b',
-            text
-        )
-
-        for d in domains:
-            text = text.replace(d, " ")
-
-        # 3️⃣ Extract plain words (amazon, flipkart, gitam)
-        words = re.findall(r'\b[a-z]{3,}\b', text)
-
-        all_items = urls + domains + words
-
-        for item in all_items:
-            if item.startswith("http"):
-                url = item
-            elif "." in item:
-                url = "https://" + item
-            else:
-                url = "https://" + item + ".com"
-
-            if url in seen:
-                continue
-            seen.add(url)
+        if text:
+            url = text if text.startswith("http") else "https://" + text
 
             qr = qrcode.make(url)
             buffer = io.BytesIO()
@@ -80,8 +76,4 @@ def home(request):
                 "img": img_str
             })
 
-        request.session["qr_codes"] = qr_codes
-        return redirect("home")
-
-    qr_codes = request.session.pop("qr_codes", None)
     return render(request, "qr.html", {"qr_codes": qr_codes})
