@@ -23,21 +23,16 @@
 #     "ebay": "https://www.ebay.com",
 #     "paypal": "https://www.paypal.com",
 # }
-
-
-import re
 import qrcode
 import base64
 from io import BytesIO
-
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
 
 
-# ---------------- ICON DETECTOR ----------------
-def get_icon(name):
+# ================= ICON FOR FILES =================
+def get_file_icon(name):
     name = name.lower()
-
     if name.endswith(".pdf"):
         return "📄"
     elif name.endswith(".doc") or name.endswith(".docx"):
@@ -49,44 +44,57 @@ def get_icon(name):
     elif name.endswith(".zip") or name.endswith(".rar"):
         return "🗜️"
     else:
-        return "🔗"
+        return "📁"
 
 
-# ---------------- HOME VIEW ----------------
+# ================= SMART URL NORMALIZER =================
+def normalize_url(text):
+    text = text.lower().strip()
+
+    if text.startswith(("http://", "https://")):
+        return text
+
+    # common cases
+    if "." in text:
+        return "https://" + text
+
+    # pure names → assume .com
+    return f"https://www.{text}.com"
+
+
+def extract_domain(url):
+    return url.replace("https://", "").replace("http://", "").split("/")[0]
+
+
+# ================= MAIN VIEW =================
 def home(request):
     qr_codes = []
-    seen = set()
 
     if request.method == "POST":
 
-        # ---------- HANDLE WEBSITE LINKS ----------
+        # ========== WEBSITE LINKS ==========
         text = request.POST.get("text", "").strip()
 
-        urls = re.findall(r'https?://[^\s]+', text)
-        domains = re.findall(r'\b[a-z0-9-]+(?:\.[a-z]{2,})+\b', text)
+        if text:
+            inputs = text.replace(",", " ").split()
 
-        for item in urls + domains:
-            if not item.startswith("http"):
-                final_url = "https://" + item
-            else:
-                final_url = item
+            for item in inputs:
+                final_url = normalize_url(item)
+                domain = extract_domain(final_url)
 
-            if final_url in seen:
-                continue
-            seen.add(final_url)
+                qr = qrcode.make(final_url)
+                buffer = BytesIO()
+                qr.save(buffer, format="PNG")
 
-            qr = qrcode.make(final_url)
-            buffer = BytesIO()
-            qr.save(buffer, format="PNG")
+                qr_codes.append({
+                    "name": domain,
+                    "url": final_url,
+                    "img": base64.b64encode(buffer.getvalue()).decode(),
+                    "icon": None,
+                    "logo": f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
+                })
 
-            qr_codes.append({
-                "name": final_url.replace("https://", "").replace("www.", ""),
-                "url": final_url,
-                "img": base64.b64encode(buffer.getvalue()).decode(),
-                "icon": "🔗"
-            })
-
-        # ---------- HANDLE FILE UPLOADS ----------
+        # ========== FILE UPLOADS ==========
         files = request.FILES.getlist("files")
         fs = FileSystemStorage()
 
@@ -102,11 +110,12 @@ def home(request):
                 "name": file.name,
                 "url": file_url,
                 "img": base64.b64encode(buffer.getvalue()).decode(),
-                "icon": get_icon(file.name)
+                "icon": get_file_icon(file.name),
+                "logo": None
             })
 
         request.session["qr_codes"] = qr_codes
         return redirect("home")
 
-    qr_codes = request.session.pop("qr_codes", None)
+    qr_codes = request.session.pop("qr_codes", [])
     return render(request, "qr.html", {"qr_codes": qr_codes})
